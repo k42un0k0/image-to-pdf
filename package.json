@@ -1,0 +1,15 @@
+{
+  "name": "pdf",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "cli-progress": "^3.9.0",
+    "commander": "^8.1.0",
+    "glob": "^7.1.7",
+    "image-size": "^1.0.0",
+    "pdfkit": "^0.12.1",
+    "progress": "^2.0.3"
+  }
+}
