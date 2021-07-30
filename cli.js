@@ -7,7 +7,7 @@ const cliProgress = require("cli-progress");
 const chalk = require("chalk");
 const sizeOf = require("image-size");
 const pjson = require("./package.json");
-
+//setup
 const program = new Command();
 program
   .version(pjson.version, "-v")
@@ -15,33 +15,33 @@ program
   .parse(process.argv);
 
 const folderPath = program.args[0];
+const doc = new PDFDocument({ autoFirstPage: false });
+const bar1 = new cliProgress.SingleBar(
+  {
+    format:
+      chalk.green("{bar}") +
+      "| {percentage}% | {filename} | ETA: {eta}s | {value}/{total}",
+  },
+  cliProgress.Presets.shades_classic
+);
+const pdfName = path.basename(folderPath) + ".pdf";
 
-// options is optional
-glob(path.join(__dirname, folderPath, "/*"), null, function(er, files) {
+doc.pipe(fs.createWriteStream(pdfName));
+
+// main process
+glob(path.join(__dirname, folderPath, "/*"), null, function (er, files) {
   const dimensions = sizeOf(files[0]);
-  const doc = new PDFDocument({ size: [dimensions.width, dimensions.height] });
-  const bar1 = new cliProgress.SingleBar(
-    {
-      format:
-        chalk.green("{bar}") +
-        "| {percentage}% | {filename} | ETA: {eta}s | {value}/{total}"
-    },
-    cliProgress.Presets.shades_classic
-  );
-  const pdfName = path.basename(folderPath) + ".pdf";
 
-  doc.pipe(fs.createWriteStream(pdfName));
   bar1.start(files.length, 0);
 
   files.forEach((file, i) => {
-    if (i !== 0) {
-      doc.addPage({
-        size: [dimensions.width, dimensions.height]
+    doc
+      .addPage({
+        size: [dimensions.width, dimensions.height],
+      })
+      .image(file, 0, 0, {
+        fit: [dimensions.width, dimensions.height],
       });
-    }
-    doc.image(file, 0, 0, {
-      fit: [dimensions.width, dimensions.height]
-    });
     bar1.update(i + 1, { filename: path.basename(file) });
   });
 
